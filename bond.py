@@ -62,3 +62,20 @@ with open('/etc/rc.local','a') as ft:
 print 'Begin to restar the network service...'
 os.system('service network restart')
 print 'Successfully restart the network service!'
+host=raw_input('Please input the hostname for this machine: ')
+netcon='''
+NETWORKING=yes
+HOSTNAME=%s
+''' %host
+selinuxcon='''
+SELINUX=disabled
+SELINUXTYPE=targeted
+'''
+print 'Setting the hostname,please wait........'
+with open('/etc/sysconfig/network','w') as wrnet:
+	wrnet.write(netcon)
+print 'Setting the selinux to disable state,please wait......'
+with open('/etc/sysconfig/selinux','w') as wrslin:
+	wrslin.write(selinuxcon)
+print 'Setting the iptables to not start up when the system start,please wait...'
+os.system('chkconfig iptables off')
