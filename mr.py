@@ -31,6 +31,7 @@ class mrservice:
 		except ftplib.all_errors,e:
 			print 'Ftp error occured!'
 			print 'The error is: {0}'.format(e)
+			print 'the directory which error occured is {0}'.format(os.path.join(srcdir,str(ytd)))
 		finally:
 			ftp.quit()
 	def delmr(self,dir,keepday=30):
