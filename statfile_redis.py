@@ -23,9 +23,18 @@ for subdir in os.listdir(dir):
 		s1u=os.listdir(os.path.join(dir,subdir))
 	elif subdir == 's1_mme':
 		s1mme=os.listdir(os.path.join(dir,subdir))
-for xdr in ['s11','s1u','s1mme','s6a','sgs']:
-	if len(xdr) > 0:
-		name = '%s:%s:%s' %(day,hour,host)
-		mapping = {xdr:len(xdr)}
-	r.hmset(name=name,mapping=mapping)
-	r.expire(name=name,time=expiretime)
+if len(s11) > 0:
+	r.hmset(name='%s:%s:%s' %(day,hour,host),mapping={'s11':len(s11)})
+	r.expire(name='%s:%s:%s' %(day,hour,host),time=expiretime)
+if len(s1u) > 0:
+	r.hmset(name='%s:%s:%s' %(day,hour,host),mapping={'s1u':len(s1u)})
+	r.expire(name='%s:%s:%s' %(day,hour,host),time=expiretime)
+if len(s1mme) > 0:
+	r.hmset(name='%s:%s:%s' %(day,hour,host),mapping={'s1mme':len(s1mme)})
+	r.expire(name='%s:%s:%s' %(day,hour,host),time=expiretime)
+if len(s6a) > 0:
+	r.hmset(name='%s:%s:%s' %(day,hour,host),mapping={'s6a':len(s6a)})
+	r.expire(name='%s:%s:%s' %(day,hour,host),time=expiretime)
+if len(sgs) > 0:
+	r.hmset(name='%s:%s:%s' %(day,hour,host),mapping={'sgs':len(sgs)})
+	r.expire(name='%s:%s:%s' %(day,hour,host),time=expiretime)
