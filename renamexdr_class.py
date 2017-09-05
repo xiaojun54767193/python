@@ -6,6 +6,7 @@
 #mail: xiaojun.gou@nnct-nsn.com
 import time,os,tarfile,logging
 from datetime import timedelta,datetime
+from multiprocessing import Process
 class groupfile:
 	"""rename and compress file
 	"""
@@ -26,7 +27,7 @@ class groupfile:
 		filetime = []
 		tag = []
 		smallfile = []
-		logging.basicConfig(filename='/var/log/movefile.log',level=logging.DEBUG)
+		logging.basicConfig(filename='/var/log/group.log',level=logging.DEBUG)
 		if os.access(xdrpath,os.F_OK):
 			for root,dirs,files in os.walk(xdrpath):
 				for file in files:
@@ -40,21 +41,20 @@ class groupfile:
 				smallfile.sort()
 				for small in smallfile:
 					try:
-						filename = fileprefix + small[0] + '_' + xdrtype + '_' + small[1][-13:-4] + '_0' + '.txt'
+						filename = fileprefix + small[0] + '_' + xdrtype.replace('_','') + '_' + small[1][-13:-4] + '_0' + '.txt'
 						os.rename(os.path.join(xdrpath,'%s_280' %xdrtype + small[0] + small[1]),os.path.join(xdrpath,filename)) #rename the file
 					except FileNotFoundError as err:
 						logging.error('%s: somefile not found,the error message is %s',time.ctime(),err)
-			else:
-				logging.warning('%s there are no files in the %s,the program will exit now',time.ctime(),xdrpath)
-		else:
-			logging.warning('%s the directory %s is not exist',time.ctime(),xdrpath)
+#			else:
+#				logging.warning('%s there are no files in the %s,the program will exit now',time.ctime(),xdrpath)
+#		else:
+#			logging.warning('%s the directory %s is not exist',time.ctime(),xdrpath)
 
 	def compress(self,path,destpath):
 		"""compress the files with gzip and after compress them rename the orignal files to another format filename
 		"""
 		self.path = path
 		self.destpath = destpath	
-		logging.basicConfig(filename='/tmp/compress.log',level=logging.DEBUG)
 		comppath = os.path.join(path,self.xdrdate,self.xdrhour,destpath)
 		for roots,dir,File in os.walk(comppath):
 			for f in File:
@@ -96,15 +96,37 @@ def main():
 	"""the main function to execute the script
 	"""
 	a = groupfile()
-	a.renamefile('S1MME','group_s1mme','/tmp/unicom/group')
-	a.compress('/tmp/unicom/group','group_s1mme')
-	a.renametmp('/tmp/unicom/group','group_s1mme')
-	a.renamefile('IuPS','group_iups','/tmp/unicom/group')
-	a.compress('/tmp/unicom/group','group_iups')
-	a.renametmp('/tmp/unicom/group','group_iups')
-	a.renamefile('S1U_IM','group_s1u/s1u_im','/tmp/unicom/group')
-	a.compress('/tmp/unicom/group','group_s1u/s1u_im')
-	a.renametmp('/tmp/unicom/group','group_s1u/s1u_im')
+	p1 = Process(target=a.renamefile,args=('GnC','group_gnc'))
+	p2 = Process(target=a.renamefile,args=('CILOC','special/ciloc'))
+	p3 = Process(target=a.renamefile,args=('MMECDR','special/mmecdr'))
+	p4 = Process(target=a.renamefile,args=('S11','group_s11'))
+	p5 = Process(target=a.renamefile,args=('S6a','group_s6a'))
+	p6 = Process(target=a.renamefile,args=('SGs','group_sgs'))
+	p7 = Process(target=a.renamefile,args=('IuCS','group_iucs'))
+	p8 = Process(target=a.renamefile,args=('Gn_EMAIL','group_gn/gn_email'))
+	p9 = Process(target=a.renamefile,args=('Gn_OTHERS','group_gn/gn_others'))
+	p10 = Process(target=a.renamefile,args=('Gn','group_gn/gn_gen'))
+	p11 = Process(target=a.renamefile,args=('Gn_FTP','group_gn/gn_ftp'))
+	p12 = Process(target=a.renamefile,args=('Gn_P2P','group_gn/gn_p2p'))
+	p13 = Process(target=a.renamefile,args=('Gn_MMS','group_gn/gn_mms'))
+	p14 = Process(target=a.renamefile,args=('Gn_DNS','group_gn/gn_dns'))
+	p15 = Process(target=a.renamefile,args=('Gn_HTTP','group_gn/gn_http'))
+	p16 = Process(target=a.renamefile,args=('Gn_VOIP','group_gn/gn_voip'))
+	p17 = Process(target=a.renamefile,args=('Gn_RTSP','group_gn/gn_rtsp'))
+	p18 = Process(target=a.renamefile,args=('S1U_EMAIL','group_s1u/s1u_email'))
+	p19 = Process(target=a.renamefile,args=('S1U_OTHERS','group_s1u/s1u_others'))
+	p20 = Process(target=a.renamefile,args=('S1U','group_s1u/s1u_gen'))
+	p21 = Process(target=a.renamefile,args=('S1U_FTP','group_s1u/s1u_ftp'))
+	p22 = Process(target=a.renamefile,args=('S1U_P2P','group_s1u/s1u_p2p'))
+	p23 = Process(target=a.renamefile,args=('S1U_MMS','group_s1u/s1u_mms'))
+	p24 = Process(target=a.renamefile,args=('S1U_DNS','group_s1u/s1u_dns'))
+	p25 = Process(target=a.renamefile,args=('S1U_HTTP','group_s1u/s1u_http'))
+	p27 = Process(target=a.renamefile,args=('S1U_VOIP','group_s1u/s1u_voip'))
+	p28 = Process(target=a.renamefile,args=('S1U_RTSP','group_s1u/s1u_rtsp'))
+	processlist = [p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15,p16,p17,p18,p19,p20,p21,p22,p23,p24,p25,p27,p28]
+	for p in processlist:
+		p.start()
+	p.join()
 
 if __name__ == '__main__':
 	main()
